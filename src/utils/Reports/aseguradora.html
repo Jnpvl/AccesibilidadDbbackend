@@ -8,60 +8,40 @@
     <style>
         @page {
             size: A4;
-            margin: 0;
-            background: url('https://cdn.pixabay.com/photo/2015/10/01/17/17/car-967387_1280.png') no-repeat center;
+            margin-left:40px;
+            margin-right: 40px;
+            background: url('{{imgBackground}}') no-repeat center;
             background-size: cover;
-        }
-
-        @media print {
-            .page {
-                -webkit-print-color-adjust: exact;
-                /* Para forzar colores y fondos en impresión */
-                print-color-adjust: exact;
-            }
         }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            background-image: url('https://cdn.pixabay.com/photo/2015/10/01/17/17/car-967387_1280.png');
+            background: url('{{imgBackground}}') no-repeat center;
             background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
         }
-
 
         .page {
             position: relative;
-            width: 100%;
-            height: 100vh;
             page-break-after: always;
         }
 
         .content {
-            position: relative;
-            z-index: 1;
-            padding: 40px;
+            padding: 5px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
-        table,
-        th,
-        td {
+        table, th, td {
             border: 1px solid #ddd;
+            font-size: 10px;
         }
 
-        th,
-        td {
+        th, td {
             padding: 8px;
             text-align: left;
         }
@@ -69,15 +49,39 @@
         th {
             background-color: #f4f4f4;
         }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{{imgBackground}}') no-repeat center;
+            background-size: cover;
+            z-index: -1;
+        }
     </style>
 </head>
 
 <body>
+    {{#each paginatedRegistros}}
     <div class="page">
-        <div class="content">
-            <h1>Reporte de Aseguradoras</h1>
-            <p>Este es un informe con los datos de las aseguradoras proporcionadas.</p>
+        <div class="background"></div> 
 
+        <header style="margin-top: 120px;">
+            <h1>Reporte de Aseguradoras</h1>
+        </header>
+
+        <div class="content">
+            <p>Este es un informe con los datos de las aseguradoras proporcionadas.</p>
             <table>
                 <thead>
                     <tr>
@@ -101,7 +105,12 @@
                 </tbody>
             </table>
         </div>
+
+        <footer style="text-align: right;">
+            <p style="font-size: 10px;">{{pageNumber}}</p>
+        </footer>
     </div>
+    {{/each}}
 </body>
 
 </html>

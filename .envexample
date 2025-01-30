@@ -3,3 +3,5 @@ DB_PORT=1433
 DB_USER=sa
 DB_PASSWORD= TuPassword123!
 DB_NAME=Movilidad
+
+IMG_BACKGROUND = http://localhost:8080/assets/background.png

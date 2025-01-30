@@ -5,6 +5,22 @@ import handlebars from 'handlebars';
 import { Request, Response } from 'express';
 import { AppDataSource } from '../config/database';
 
+
+const IMG_BACKGROUND = process.env.IMG_BACKGROUND || 'http://localhost:8080/assets/default.png';
+
+console.log(IMG_BACKGROUND)
+
+const paginateData = (data: any[], pageSize: number) => {
+    const paginated = [];
+    for (let i = 0; i < data.length; i += pageSize) {
+        paginated.push({
+            pageNumber: paginated.length + 1,
+            registros: data.slice(i, i + pageSize)
+        });
+    }
+    return paginated;
+};
+
 const generatePdf = async ({ template, data }: { template: string; data: any }) => {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
@@ -13,25 +29,24 @@ const generatePdf = async ({ template, data }: { template: string; data: any }) 
         const templatePath = path.resolve(__dirname, `../utils/Reports/${template}`);
         let htmlContent = fs.readFileSync(templatePath, 'utf8');
 
+        const paginatedData = paginateData(data.registros, 20);
+
         const compiledTemplate = handlebars.compile(htmlContent);
-        const compiledHtml = compiledTemplate(data);
+        const compiledHtml = compiledTemplate({ 
+            paginatedRegistros: paginatedData,
+            imgBackground: IMG_BACKGROUND  
+        });
 
         await page.setContent(compiledHtml, { waitUntil: 'networkidle2' });
         await page.setRequestInterception(true);
         page.on('request', (request) => {
-            if (request.resourceType() === 'image') {
-                request.continue(); 
-            } else {
-                request.continue();
-            }
+            request.continue();
         });
-
 
         const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
             landscape: false,
-
         });
 
         await browser.close();
@@ -42,6 +57,8 @@ const generatePdf = async ({ template, data }: { template: string; data: any }) 
         throw error;
     }
 };
+
+
 
 export const downloadReport = async (req: Request, res: Response, options: {
     tableName: string;

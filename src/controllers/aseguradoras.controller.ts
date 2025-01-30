@@ -16,14 +16,6 @@ export const getAseguradoras = async (req: Request, res: Response): Promise<void
   await getPaginatedData<Aseguradoras>(req, res, options);
 };
 
-// export const getAseguradorasReport = async (req: Request, res: Response): Promise<void> => {
-//   await downloadReport(req, res, {
-//     tableName: "Aseguradoras",
-//     orderByColumn: "seg_id",
-//     template: "aseguradora.html",
-//     filename: "reporte_aseguradoras",
-// });
-
 //   //filtrar contenido
 //  // await downloadReport(req, res, {
 //  //   tableName: "Aseguradoras",
