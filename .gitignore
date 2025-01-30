@@ -1,0 +1,39 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Directorios de construcción
+dist/
+build/
+.out/
+.out
+
+# Directorios del editor
+.vscode/
+.idea/
+*.swp
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Caché y logs
+logs/
+*.log
+*.gz
+.npm/
+.pnp
+.pnp.js
+
+# Dependencias de Puppeteer
+.puppeteer/
+
+# Directorios de TypeScript
+*.tsbuildinfo
