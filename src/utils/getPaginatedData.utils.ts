@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../config/database";
+import { DataSource } from "typeorm";
 import { PaginationParams } from "../interfaces/shared.inferface";
 
 export const getPaginatedData = async <T>(
   req: Request,
   res: Response,
-  params: PaginationParams
+  params: PaginationParams,
+  dataSource: DataSource 
 ): Promise<Response> => {
-  const queryRunner = AppDataSource.createQueryRunner();
+  const queryRunner = dataSource.createQueryRunner();
 
   const page = parseInt(req.query.page as string) || 1;
   const pageSize = parseInt(req.query.pageSize as string) || 10;
@@ -18,10 +19,9 @@ export const getPaginatedData = async <T>(
 
   try {
     let whereClause = '';
-    let queryParams: PaginationParams[] = [];
     if (search && searchFields.length > 0) {
       whereClause = `WHERE ${searchFields
-        .map((field) => `LOWER(${field}) LIKE '%${search}%'`)
+        .map((field) => `LOWER(${field}) LIKE '%${search.toLowerCase()}%'`)
         .join(" OR ")}`;
     }
 
@@ -31,12 +31,12 @@ export const getPaginatedData = async <T>(
       ORDER BY ${params.orderByColumn}
       OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROWS ONLY
     `;
-    const data: T[] = await queryRunner.query(query, queryParams); 
+    const data: T[] = await queryRunner.query(query);
 
     const countQuery = `
       SELECT COUNT(*) as total FROM ${params.tableName} ${whereClause}
     `;
-    const totalCount = await queryRunner.query(countQuery, queryParams);
+    const totalCount = await queryRunner.query(countQuery);
     const totalRecords = totalCount[0].total;
     const totalPages = Math.ceil(totalRecords / pageSize);
 

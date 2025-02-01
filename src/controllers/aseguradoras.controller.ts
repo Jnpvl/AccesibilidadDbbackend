@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { getPaginatedData } from "../utils/getPaginatedData.utils";
 import { PaginationParams } from "../interfaces/shared.inferface";
 import { Aseguradoras } from "../interfaces/aseguradoras.interface";
+
 import { downloadReport } from "../utils/generatePdf.utils";
-
-
+import { ConcesionesDataSource } from "../config/database";
 
 export const getAseguradoras = async (req: Request, res: Response): Promise<void> => {
   const options: PaginationParams = {
@@ -13,9 +13,8 @@ export const getAseguradoras = async (req: Request, res: Response): Promise<void
     searchFields: ["seg_nombre"]
   };
 
-  await getPaginatedData<Aseguradoras>(req, res, options);
+  await getPaginatedData<Aseguradoras>(req, res, options, ConcesionesDataSource);
 };
-
 //   //filtrar contenido
 //  // await downloadReport(req, res, {
 //  //   tableName: "Aseguradoras",
@@ -29,10 +28,10 @@ export const getAseguradoras = async (req: Request, res: Response): Promise<void
 
 export const getAseguradorasReport = async (req: Request, res: Response): Promise<void> => {
   await downloadReport(req, res, {
-         tableName: "Aseguradoras",
-         orderByColumn: "seg_id",
-         template: "aseguradora.html",
-         filename: "reporte_aseguradoras",
-     });
+    tableName: "Aseguradoras",
+    orderByColumn: "seg_id",
+    template: "aseguradora.html",
+    filename: "reporte_aseguradoras",
+  }, ConcesionesDataSource);
 }
 

@@ -3,7 +3,7 @@ import path from "path";
 import cors from "cors";
 import morgan from "morgan"
 import v1Router from "../routes";
-import { AppDataSource } from "../config/database";
+import { initializeDatabases } from "../config/database";
 
 class Server {
     public app: Application;
@@ -16,18 +16,17 @@ class Server {
         this.database();
     }
     
-    database(): void {
-        AppDataSource.initialize()
+    database(): Promise<void> {
+        return initializeDatabases()
             .then(() => {
-                console.log("Database connected");
+                console.log("Todas las bases de datos han sido inicializadas correctamente.");
             })
             .catch((error) => {
-                console.error("Database connection error:", error);
-                AppDataSource.destroy(); 
+                console.error("Error conectando a las bases de datos:", error);
+                process.exit(1);
             });
     }
     
-
     config():void {
         this.app.use(morgan("dev"));
         this.app.use(
