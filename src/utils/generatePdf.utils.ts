@@ -106,4 +106,4 @@ export const downloadReport = async (
     } finally {
       await queryRunner.release();
     }
-  };
+};
