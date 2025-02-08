@@ -6,31 +6,44 @@ export const getPaginatedData = async <T>(
   req: Request,
   res: Response,
   params: PaginationParams,
-  dataSource: DataSource 
+  dataSource: DataSource
 ): Promise<Response> => {
   const queryRunner = dataSource.createQueryRunner();
 
   const page = parseInt(req.query.page as string) || 1;
-  const pageSize = parseInt(req.query.pageSize as string) || 10;
+  const pageSize = parseInt(req.query.pageSize as string) || 9;
   const offset = (page - 1) * pageSize;
 
-  const search = req.query.search as string || '';
+  const search = (req.query.search as string) || "";
   const searchFields = params.searchFields || [];
 
+  const fechaInicio = req.query.fechaInicio as string; 
+  const fechaTermino = req.query.fechaTermino as string; 
+
   try {
-    let whereClause = '';
+    let whereConditions: string[] = [];
+
     if (search && searchFields.length > 0) {
-      whereClause = `WHERE ${searchFields
-        .map((field) => `LOWER(${field}) LIKE '%${search.toLowerCase()}%'`)
-        .join(" OR ")}`;
+      whereConditions.push(
+        `(${searchFields
+          .map((field) => `LOWER(${field}) LIKE '%${search.toLowerCase()}%'`)
+          .join(" OR ")})`
+      );
     }
+
+    if (fechaInicio && fechaTermino) {
+      whereConditions.push(`FechaInicio >= '${fechaInicio}' AND FechaTermino <= '${fechaTermino}'`);
+    }
+
+    let whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : "";
 
     const query = `
       SELECT * FROM ${params.tableName} 
       ${whereClause}
-      ORDER BY ${params.orderByColumn}
+      ORDER BY ${params.orderByColumn} DESC
       OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROWS ONLY
     `;
+
     const data: T[] = await queryRunner.query(query);
 
     const countQuery = `

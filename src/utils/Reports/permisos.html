@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Aseguradoras</title>
+    <style>
+        @page {
+            size: A4;
+            margin-left:40px;
+            margin-right: 40px;
+            background: url('{{imgBackground}}') no-repeat center;
+            background-size: cover;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('{{imgBackground}}') no-repeat center;
+            background-size: cover;
+        }
+
+        .page {
+            position: relative;
+            page-break-after: always;
+        }
+
+        .content {
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            font-size: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{{imgBackground}}') no-repeat center;
+            background-size: cover;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+    {{#each paginatedRegistros}}
+    <div class="page">
+        <div class="background"></div> 
+
+        <header style="margin-top: 120px;">
+            <h1>Reporte de Aseguradoras</h1>
+        </header>
+
+        <div class="content">
+            <p>Este es un informe con los datos de las aseguradoras proporcionadas.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de permiso</th>
+                        <th>Modalidad</th>
+                        <th>Permisionario</th>
+                        <th>Fecha de termino</th>
+                        <th>Municipio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each registros}}
+                    <tr>
+                        <td>{{TipoDePermiso}}</td>
+                        <td>{{Modalidad}}</td>
+                        <td>{{Permisionario}}</td>
+                        <td>{{FechaTermino}}</td>
+                        <td>{{Municipio}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <footer style="text-align: right;">
+            <p style="font-size: 10px;">{{pageNumber}}</p>
+        </footer>
+    </div>
+    {{/each}}
+</body>
+
+</html>

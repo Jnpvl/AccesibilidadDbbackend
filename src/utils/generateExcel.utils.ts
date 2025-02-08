@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import ExcelJS from 'exceljs';
 
+//funciona para exportar las columnas que se quieren, no filtrar por datos especificos
+
 export const downloadExcelReport = async (
     req: Request,
     res: Response,
