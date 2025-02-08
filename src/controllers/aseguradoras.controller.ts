@@ -5,7 +5,6 @@ import { Aseguradoras } from "../interfaces/aseguradoras.interface";
 
 import { downloadReport } from "../utils/generatePdf.utils";
 import { ConcesionesDataSource } from "../config/database";
-import { downloadExcelReport } from "../utils/generateExcel.utils";
 
 export const getAseguradoras = async (req: Request, res: Response): Promise<void> => {
   const options: PaginationParams = {
@@ -36,18 +35,18 @@ export const getAseguradorasReport = async (req: Request, res: Response): Promis
   }, ConcesionesDataSource);
 }
 
-export const getAseguradorasExcel = async (req: Request, res: Response): Promise<void> => {
+// export const getAseguradorasExcel = async (req: Request, res: Response): Promise<void> => {
   
-  const columnsParam = req.query.columns as string | undefined;
-  const filters = req.query.filters as string | undefined;
+//   const columnsParam = req.query.columns as string | undefined;
+//   const filters = req.query.filters as string | undefined;
 
-  const columns: string[] | undefined = columnsParam ? columnsParam.split(',') : undefined;
+//   const columns: string[] | undefined = columnsParam ? columnsParam.split(',') : undefined;
 
-  await downloadExcelReport(req, res, {
-    tableName: "Aseguradoras",
-    orderByColumn: "seg_id",
-    columns, 
-    filters, 
-    filename: "reporte_aseguradoras",
-  }, ConcesionesDataSource);
-};
+//   await downloadExcelReport(req, res, {
+//     tableName: "Aseguradoras",
+//     orderByColumn: "seg_id",
+//     columns, 
+//     filters, 
+//     filename: "reporte_aseguradoras",
+//   }, ConcesionesDataSource);
+// };

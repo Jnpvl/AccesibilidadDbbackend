@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import { Request, Response } from 'express';
-import { AppDataSource } from '../config/database';
 import { DataSource } from 'typeorm';
 
 
@@ -30,7 +29,7 @@ const generatePdf = async ({ template, data }: { template: string; data: any }) 
         const templatePath = path.resolve(__dirname, `../utils/Reports/${template}`);
         let htmlContent = fs.readFileSync(templatePath, 'utf8');
 
-        const paginatedData = paginateData(data.registros, 20);
+        const paginatedData = paginateData(data.registros, 1);
 
         const compiledTemplate = handlebars.compile(htmlContent);
         const compiledHtml = compiledTemplate({ 
@@ -81,7 +80,7 @@ export const downloadReport = async (
     }
   
     if (options.orderByColumn) {
-      query += ` ORDER BY ${options.orderByColumn} ASC`;
+      query += ` ORDER BY ${options.orderByColumn} DESC`;
     }
   
     try {
@@ -92,7 +91,8 @@ export const downloadReport = async (
         template: options.template, 
         data: { registros: data } 
       });
-  
+      
+
       res.set({
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${options.filename}.pdf"`,

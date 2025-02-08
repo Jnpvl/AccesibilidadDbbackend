@@ -6,6 +6,7 @@ import { Aseguradoras } from "../interfaces/aseguradoras.interface";
 import { downloadReport } from "../utils/generatePdf.utils";
 import { PermisosDataSource } from "../config/database";
 import { downloadPersonaliteExcelReport } from "../utils/generateFilterExcel.utils";
+import { generateExcel } from "../utils/generateExcel.utils";
 
 export const getPermisos = async (req: Request, res: Response): Promise<void> => {
   const options: PaginationParams = {
@@ -16,15 +17,6 @@ export const getPermisos = async (req: Request, res: Response): Promise<void> =>
 
   await getPaginatedData<Aseguradoras>(req, res, options, PermisosDataSource);
 };
-
-export const getPermisosReport = async (req: Request, res: Response): Promise<void> => {
-  await downloadReport(req, res, {
-    tableName: "Permisos",
-    orderByColumn: "FechaTermino",
-    template: "permisos.html",
-    filename: "reporte_permisos",
-  }, PermisosDataSource);
-}
 
 export const getPermisosExcel = async (req: Request, res: Response): Promise<void> => {
   let filtersObj: { [key: string]: string } | undefined = undefined;
@@ -43,6 +35,8 @@ export const getPermisosExcel = async (req: Request, res: Response): Promise<voi
   }, PermisosDataSource);
 };
 
+
+//personal
 export const getPermisionarioData = async (req: Request, res: Response): Promise<void> => {
   const permisionarioId = Number(req.query.permisionarioId);
 
@@ -54,15 +48,27 @@ export const getPermisionarioData = async (req: Request, res: Response): Promise
   const queryRunner = PermisosDataSource.createQueryRunner();
 
   try {
-    const query = `
-    SELECT *
-    FROM Permisos
-    WHERE PermisionarioId = @0
-    ORDER BY FechaTermino DESC
-  `;
-    const data = await queryRunner.query(query, [permisionarioId]);
+    const queryPermisionario = `
+      SELECT *
+      FROM Permisionarios
+      WHERE PermisionarioId = @0
+    `;
+    const permisionarioResult = await queryRunner.query(queryPermisionario, [permisionarioId]);
+    const permisionario = permisionarioResult[0] || null; 
 
-    res.status(200).json({ data });
+    const queryPermisos = `
+      SELECT *
+      FROM Permisos
+      WHERE PermisionarioId = @0
+      ORDER BY FechaTermino DESC
+    `;
+    const permisos = await queryRunner.query(queryPermisos, [permisionarioId]);
+
+    res.status(200).json({
+      permisionario,  
+      permisos       
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al obtener los datos", error });
@@ -71,7 +77,57 @@ export const getPermisionarioData = async (req: Request, res: Response): Promise
   }
 };
 
-export const getPermisionarioGlobalReport = async (req: Request, res: Response): Promise<void> => {
+export const getPermisionarioExcel = async (req: Request, res: Response): Promise<void> => {
+  let filtersObj: { [key: string]: string } | undefined = undefined;
+
+  if (req.query.filters) {
+    try {
+      filtersObj = JSON.parse(req.query.filters as string);
+    } catch (e) {
+      console.error("Error parseando filters:", e);
+    }
+  }
+
+  await generateExcel(req, res, {
+    tableName: "Permisos",
+    orderByColumn: "FechaTermino",
+    filters: filtersObj,
+    filename: "reporte_permisos_join",
+  }, PermisosDataSource);
+};
+
+export const getPermisosReport = async (req: Request, res: Response): Promise<void> => {
+  const permisionarioId = Number(req.query.permisionarioId);
+
+  let filterString = '';
+  if (!isNaN(permisionarioId) && permisionarioId > 0) {
+    filterString = `PermisionarioId = ${permisionarioId}`;
+  }
   
-}
+  await downloadReport(req, res, {
+    tableName: "Permisos",
+    orderByColumn: "FechaTermino",
+    template: "permisos.html",
+    filename: "reporte_permisos",
+    filters: filterString
+  }, PermisosDataSource);
+};
+
+export const getPermisoReport = async (req: Request, res: Response): Promise<void> => {
+  const permisoId = Number(req.query.permisoId);
+
+  let filterString = '';
+  if (!isNaN(permisoId) && permisoId > 0) {
+    filterString = `PermisoId = ${permisoId}`;
+  }
+  
+  await downloadReport(req, res, {
+    tableName: "Permisos",
+    orderByColumn: "FechaTermino",
+    template: "permiso.html", 
+    filename: "reporte_permiso",
+    filters: filterString
+  }, PermisosDataSource);
+};
+
 
