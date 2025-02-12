@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs"; 
 import { User } from "../entities/usuarios.entities";
 import { UserDataSource } from "../config/database";
 import { generateJWT } from "../utils/jwt.utils";

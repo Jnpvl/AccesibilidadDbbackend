@@ -1,8 +1,7 @@
-// src/config/database.ts
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
 import { User } from "../entities/usuarios.entities";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs"; 
 
 dotenv.config();
 
@@ -13,7 +12,6 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER || "",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "",
-    //entities: [Enterprise,Users,UserDetails],
     synchronize: true,
     extra: {
         options: {
@@ -47,7 +45,6 @@ export const ConcesionesDataSource = new DataSource({
     username: process.env.DB_CONCESIONES_USER || "",
     password: process.env.DB_CONCESIONES_PASSWORD || "",
     database: process.env.DB_CONCESIONES_NAME || "",
-    //entities: [Enterprise,Users,UserDetails],
     synchronize: true,
     extra: {
         options: {
@@ -64,7 +61,6 @@ export const PermisosDataSource = new DataSource({
     username: process.env.DB_PERMISOS_USER || "",
     password: process.env.DB_PERMISOS_PASSWORD || "",
     database: process.env.DB_PERMISOS_NAME || "",
-    //entities: [Enterprise,Users,UserDetails],
     synchronize: true,
     extra: {
         options: {
@@ -80,7 +76,7 @@ export const seedAdminUser = async (): Promise<void> => {
 
         const adminExists = await userRepository.findOne({ where: { role: 'administrador' } });
         if (!adminExists) {
-            const hashedPassword = await bcrypt.hash("Se20sepaad80$", 10);
+            const hashedPassword = await bcrypt.hash("Se20sepaad80$", 10);  // Funciona con bcryptjs ✅
 
             const adminUser = userRepository.create({
                 role: 'administrador',
@@ -110,7 +106,6 @@ export const initializeDatabases = async () => {
         await UserDataSource.initialize();
         console.log("Conectado a la base de datos de usuarios");
 
-    
         await seedAdminUser();
 
         await ConcesionesDataSource.initialize();
