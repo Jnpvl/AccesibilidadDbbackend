@@ -46,7 +46,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log(req.body);
     const { role, Name, ApellidoP, ApellidoM, password, canExportExcel, canExportPdf, canCreateUser } = req.body;
 
     if (!role || !Name || !ApellidoP || !password) {
