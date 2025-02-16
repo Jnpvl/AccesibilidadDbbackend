@@ -7,7 +7,7 @@ import { initializeDatabases } from "../config/database";
 
 class Server {
     public app: Application;
-    public PORT = process.env.PORT || 8080;
+    public PORT = process.env.PORT || 3000;
 
     constructor(){
         this.app = express();
@@ -23,7 +23,7 @@ class Server {
             })
             .catch((error) => {
                 console.error("Error conectando a las bases de datos:", error);
-                process.exit(1);
+               // process.exit(1);
             });
     }
     
@@ -46,6 +46,10 @@ class Server {
 
     router():void {
         this.app.use("/api/v1",v1Router);
+        this.app.get("/", (req: any, res: { send: (arg0: string) => void; }) => {
+            res.send("Backend is up!");
+        });
+        
     }
 
     start(): void {
